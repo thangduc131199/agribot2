@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="EKF_node" pkg="tractor_controller" type="EKF_node.py" output="screen"/> 
+</launch>

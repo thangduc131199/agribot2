@@ -1,0 +1,8 @@
+prefix=/home/ducthang/agribot2/install
+
+Name: tractor_controller2
+Description: Description of tractor_controller2
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

@@ -1,0 +1,7 @@
+<launch>
+
+<include file= "$(find tractor_gazebo)/launch/gazebo.launch" />
+<rosparam command="load" file="$(find tractor_controller)/config/joint_steer_config.yaml" />
+<node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen" respawn="false" args="joint_state_controller left_steer_joint right_steer_joint" /> 
+
+</launch>

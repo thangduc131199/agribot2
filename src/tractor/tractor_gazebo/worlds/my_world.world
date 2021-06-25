@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="my_world">
+    <include>
+      <uri>model://ground_grass_1</uri>
+      <name>ground 1</name>
+      <pose>10 10 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://ground_grass_2</uri>
+      <name>ground 2</name>
+      <pose>10 -10 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://ground_grass_2</uri>
+      <name>ground 3</name>
+      <pose>-10 10 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://ground_grass_1</uri>
+      <name>ground 4</name>
+      <pose>-10 -10 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://ground_grass_3</uri>
+      <name>ground 5</name>
+      <pose>30 10 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://ground_grass_2</uri>
+      <name>ground 6</name>
+      <pose>30 -10 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://ground_grass_1</uri>
+      <name>ground 7</name>
+      <pose>50 10 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://ground_grass_1</uri>
+      <name>ground 8</name>
+      <pose>50 -10 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://ground_grass_2</uri>
+      <name>ground 9</name>
+      <pose>70 10 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://ground_grass_2</uri>
+      <name>ground 10</name>
+      <pose>70 -10 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+  </world>
+</sdf>

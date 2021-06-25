@@ -1,0 +1,7 @@
+set(tractor_controller_SETUP_PY_SETUP_MODULE "distutils.core")
+set(tractor_controller_SETUP_PY_VERSION "0.0.0")
+set(tractor_controller_SETUP_PY_SCRIPTS "")
+set(tractor_controller_SETUP_PY_PACKAGES "module")
+set(tractor_controller_SETUP_PY_PACKAGE_DIRS "src/module")
+set(tractor_controller_SETUP_PY_MODULES "")
+set(tractor_controller_SETUP_PY_MODULE_DIRS "")

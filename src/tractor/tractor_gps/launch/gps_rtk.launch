@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="tractor_gps" pkg="tractor_gps" type="gps_RTK_node.py" output="screen"/> 
+</launch>

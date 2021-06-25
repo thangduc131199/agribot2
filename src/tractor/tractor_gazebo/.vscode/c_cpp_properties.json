@@ -1,0 +1,21 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/ducthang/agribot/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/ducthang/agribot/src/hector_gazebo-melodic-devel/hector_gazebo_plugins/include/**",
+        "/home/ducthang/agribot/src/hector_gazebo-melodic-devel/hector_gazebo_thermal_camera/include/**",
+        "/home/ducthang/agribot/src/robot_localization-noetic-devel/include/**",
+        "/home/ducthang/agribot/src/tractor/tractor_controller/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ],
+  "version": 4
+}

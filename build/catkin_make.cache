@@ -1,0 +1,2 @@
+hector_gazebo-melodic-devel/hector_gazebo:hector_gazebo-melodic-devel/hector_gazebo_plugins:hector_gazebo-melodic-devel/hector_gazebo_thermal_camera:hector_gazebo-melodic-devel/hector_gazebo_worlds:hector_gazebo-melodic-devel/hector_sensors_gazebo:robot_localization-noetic-devel:tractor/tractor_controller:tractor/tractor_description:tractor/tractor_gazebo:tractor/tractor_gps
+-DCATKIN_DEVEL_PREFIX=/home/ducthang/agribot2/devel -DCMAKE_INSTALL_PREFIX=/home/ducthang/agribot2/install -G Unix Makefiles

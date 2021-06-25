@@ -1,0 +1,17 @@
+material GrassGround
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {  
+                scale .02 .02
+                texture grass.jpg
+                filtering anisotropic
+                max_anisotropy 16
+            }
+        }
+    }
+}

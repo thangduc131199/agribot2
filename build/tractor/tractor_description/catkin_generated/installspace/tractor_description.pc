@@ -1,0 +1,8 @@
+prefix=/home/ducthang/agribot2/install
+
+Name: tractor_description
+Description: Description of tractor_description
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

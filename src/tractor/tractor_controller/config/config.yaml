@@ -1,0 +1,14 @@
+tractor_controller_name:
+  type: tractor_controller/TractorController
+  base_frame_id: 'base_link'
+  odom_frame_id: 'base_link'
+  h_front_rear_axis: 1.2
+  wheel_separation: 0.8
+  front_wheel_radius: 0.25
+  rear_wheel_radius: 0.35
+  front_wheel_joint_L: 'left_front_axle'
+  front_wheel_joint_R: 'right_front_axle'
+  rear_wheel_joint_L: 'left_rear_axle'
+  rear_wheel_joint_R: 'right_rear_axle'
+  front_steer_joint_L: 'left_steering_joint'
+  front_steer_joint_R: 'right_steering_joint'
