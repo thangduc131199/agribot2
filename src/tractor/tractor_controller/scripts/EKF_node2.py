@@ -19,9 +19,9 @@ show_animation=True
 
 # Covariance for EKF simulation
 Q = np.diag([
-    np.deg2rad(1.0),  # variance of yaw_rate
-    0.1  # variance of acc
-])**2  # predict state covariance
+    np.deg2rad(5.0),  # variance of yaw_rate
+    1.0  # variance of acc
+])**2  # predict state coariance
 R = np.diag([0.5,0.5])**2 # Observation x,y position covariance
 
 x_gps=0
@@ -69,15 +69,13 @@ def callback_imu(msg):
 
 
 def motion_model(x, u):
-    F = np.array([[1.0, 0  , 0  , math.cos(x[2,0])*DT],
-                  [0  , 1.0, 0  , math.sin(x[2,0])*DT],
-                  [0  , 0  , 1.0, 0               ],
-                  [0  , 0  , 0  , 1.0             ]])
+    F = np.array([[1.0, 0  , math.cos(u[0,0])*DT],
+                  [0  , 1.0, math.sin(u[0,0])*DT],
+                  [0  , 0  ,  1.0             ]])
 
     B = np.array([[0.0, 0.0],
                   [0.0, 0.0],
-                  [DT,  0.0 ],
-                  [0.0, DT]])
+                  [0.0 , DT]])
 
     x = F @ x + B @ u
 
@@ -99,35 +97,34 @@ def jacob_f_b(x, u):
     dy/dyaw = v*dt*cos(yaw)
     dy/dv = dt*sin(yaw)
     """
-    yaw = x[2, 0]
-    v = x[3, 0]
+    yaw = u[0, 0]
+    v = x[2, 0]
     jF = np.array([
-        [1.0, 0.0, -DT * v * math.sin(yaw), DT * math.cos(yaw)],
-        [0.0, 1.0, DT * v * math.cos(yaw), DT * math.sin(yaw)],
-        [0.0, 0.0, 1.0, 0.0],
-        [0.0, 0.0, 0.0, 1.0]])
-    jB=np.array([[0,0],[0,0],[DT,0],[0,DT]])
+        [1.0, 0.0, DT * math.cos(yaw)],
+        [0.0, 1.0, DT * math.sin(yaw)],
+        [0.0, 0.0, 1.0]])
+    jB=np.array([[-DT*v*math.sin(yaw),0],[DT*v*math.cos(yaw),0],[0,DT]])
 
     return jF,jB
 
 def jacob_h():
     # Jacobian of Observation Model
     jH = np.array([
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
+        [1, 0, 0],
+        [0, 1, 0],
     ])
 
     return jH
 
 def observation_model(x):
     H = np.array([
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
+        [1, 0, 0],
+        [0, 1, 0],
     ])
 
     z = H @ x
 
-    return z    
+    return z 
 
 def ekf_estimation(xEst, PEst, z, u):
     #  Predict
@@ -147,7 +144,7 @@ def ekf_estimation(xEst, PEst, z, u):
 
 def observation():
     z=np.array([[x_gps],[y_gps]])
-    ud=np.array([[W_imu],[a_imu]])
+    ud=np.array([[yaw_imu],[a_imu]])
     return z,ud
 
 
@@ -165,11 +162,11 @@ def run_node():
 
     while not (sub_imu and sub_gps):
         rate.sleep()
-    xEst = np.zeros((4, 1))
-    PEst = np.eye(4)
+    xEst = np.zeros((3, 1))
+    PEst = np.eye(3)
     hx_est=[xEst[0,0]]
     hy_est=[xEst[1,0]]
-    hv_est=[xEst[3,0]]
+    hv_est=[xEst[2,0]]
     ht=[0]
     z,ud=observation()
     hz_0=[z[0,0]]
@@ -182,12 +179,12 @@ def run_node():
         msg=state_tractor()
         msg.x  =xEst[0,0]
         msg.y  =xEst[1,0]
-        msg.yaw=xEst[2,0]
-        msg.v  =xEst[3,0]
+        msg.yaw=ud[0,0]
+        msg.v  =xEst[2,0]
         pub.publish(msg)
         hx_est.append(xEst[0,0])
         hy_est.append(xEst[1,0])
-        hv_est.append(xEst[3,0])
+        hv_est.append(xEst[2,0])
         hz_0.append(z[0,0])
         hz_1.append(z[1,0])
         ht.append(time)

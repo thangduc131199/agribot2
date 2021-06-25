@@ -15,28 +15,29 @@ from scipy.spatial.transform import Rotation as Rot
 
 
 DT = 0.1  # time tick [s]
-SIM_TIME = 50.0  # simulation time [s]
+SIM_TIME = 20.0  # simulation time [s]
 
 # Covariance for EKF simulation
 Q = np.diag([
     np.deg2rad(10.0),  # variance of yaw_rate
-    3.0  # variance of acc
-])**2  # predict state covariance
-R = np.diag([0.4,0.4])**2 # Observation x,y position covariance
+    1  # variance of acc
+])**2  # predict state coariance
+R = np.diag([0.5,0.5])**2 # Observation x,y position covariance
 
 #  Simulation parameter
-INPUT_NOISE = np.diag([np.deg2rad(10.0),1])
-GPS_NOISE = np.diag([0.2, 0.2])
+INPUT_NOISE = np.diag([np.deg2rad(10),0.3])
+GPS_NOISE = np.diag([0.3, 0.3])
 
 
 
 show_animation = True
+yaw_rate=0.3 # [rad/s]
 
-
-def calc_input():
-    a = 0.0  # [m/s]
-    yawrate = 0.1  # [rad/s]
-    u = np.array([[yawrate],[a]])
+def calc_input(u):
+    yaw=u[0,0] 
+    yaw=yaw+yaw_rate*DT #[rad]
+    a = u[1,0]  # [m/s]
+    u = np.array([[yaw],[a]])
     return u
 
 
@@ -55,14 +56,12 @@ def observation(xTrue, xd, u):
 
 
 def motion_model(x, u):
-    F = np.array([[1.0, 0  , 0  , math.cos(x[2,0])*DT],
-                  [0  , 1.0, 0  , math.sin(x[2,0])*DT],
-                  [0  , 0  , 1.0, 0               ],
-                  [0  , 0  , 0  , 1.0             ]])
+    F = np.array([[1.0, 0  , math.cos(u[0,0])*DT],
+                  [0  , 1.0, math.sin(u[0,0])*DT],
+                  [0  , 0  ,  1.0             ]])
 
     B = np.array([[0.0, 0.0],
                   [0.0, 0.0],
-                  [DT , 0.0 ],
                   [0.0 , DT]])
 
     x = F @ x + B @ u
@@ -72,8 +71,8 @@ def motion_model(x, u):
 
 def observation_model(x):
     H = np.array([
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
+        [1, 0, 0],
+        [0, 1, 0],
     ])
 
     z = H @ x
@@ -96,14 +95,13 @@ def jacob_f_b(x, u):
     dy/dyaw = v*dt*cos(yaw)
     dy/dv = dt*sin(yaw)
     """
-    yaw = x[2, 0]
-    v = x[3, 0]
+    yaw = u[0, 0]
+    v = x[2, 0]
     jF = np.array([
-        [1.0, 0.0, -DT * v * math.sin(yaw), DT * math.cos(yaw)],
-        [0.0, 1.0, DT * v * math.cos(yaw), DT * math.sin(yaw)],
-        [0.0, 0.0, 1.0, 0.0],
-        [0.0, 0.0, 0.0, 1.0]])
-    jB=np.array([[0,0],[0,0],[DT,0],[0,DT]])
+        [1.0, 0.0, DT * math.cos(yaw)],
+        [0.0, 1.0, DT * math.sin(yaw)],
+        [0.0, 0.0, 1.0]])
+    jB=np.array([[-DT*v*math.sin(yaw),0],[DT*v*math.cos(yaw),0],[0,DT]])
 
     return jF,jB
 
@@ -111,8 +109,8 @@ def jacob_f_b(x, u):
 def jacob_h():
     # Jacobian of Observation Model
     jH = np.array([
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
+        [1, 0, 0],
+        [0, 1, 0],
     ])
 
     return jH
@@ -165,12 +163,10 @@ def main():
     time = 0.0
 
     # State Vector [x y yaw v]'
-    xEst = np.zeros((4, 1))
-    xEst[2,0]=0.9
-    xEst[0,0]=-2
-    xTrue = np.zeros((4, 1))
-    xTrue[3,0]=3 #m/s
-    PEst = np.eye(4)
+    xEst = np.zeros((3, 1))
+    xTrue = np.zeros((3, 1))
+    xTrue[2,0]=5 #m/s
+    PEst = np.eye(3)
 
     xDR =xTrue # Dead reckoning
 
@@ -180,10 +176,10 @@ def main():
     hxDR = xTrue
     hz = np.zeros((2, 1))
     htime=time
-
+    u=np.array([[0],[0]])
     while SIM_TIME >= time:
         time += DT
-        u = calc_input()
+        u = calc_input(u)
 
         xTrue, z, xDR, ud = observation(xTrue, xDR, u)
 
@@ -213,13 +209,44 @@ def main():
             plt.grid(True)
             plt.pause(0.001)
     plt.cla()
-    plt.figure(1)
-    plt.plot(htime,hxEst[3,:],"-r")
-    plt.plot(htime,hxTrue[3,:],"-b")
-    plt.figure(2)
-    plt.plot(htime,hxEst[2,:],"-r")
+    plt.figure("Toa do EKF")
+    plt.subplot(2,1,1)
+    plt.ylabel("x[m]")
+    plt.xlabel("t[s]")
+    plt.plot(htime,hxTrue[0,:],"-b",label="x_true")
+    plt.plot(htime,hz[0,:],".g",label="x_gps")
+    plt.plot(htime,hxEst[0,:],"-r",label="x_est")
+    plt.grid(True)
+    plt.legend()
+    plt.subplot(2,1,2)
+    plt.ylabel("y[m]")
+    plt.xlabel("t[s]")
+    plt.plot(htime,hxTrue[1,:],"-b",label="y_true")
+    plt.plot(htime,hz[1,:],".g",label="y_gps")
+    plt.plot(htime,hxEst[1,:],"-r",label="y_est")
+    plt.grid(True)
+    plt.legend()
     
-    plt.plot(htime,hxTrue[2,:],"-b")
+    
+    
+    plt.figure("Van_toc_EKF")
+    plt.xlabel("t[s]")
+    plt.ylabel("Van toc[m/s]")
+    plt.plot(htime,hxEst[2,:],label="v_est")
+    plt.plot(htime,hxTrue[2,:],label="v_true")
+    plt.grid(True)
+    plt.legend()
+
+    plt.figure("Quy dao chuyen dong")
+    plt.xlabel("x[m]")
+    plt.xlabel("y[m]")
+    plt.plot(hxTrue[0,:],hxTrue[1,:],"-b",label="True")
+    plt.plot(hz[0,:],hz[1,:],".g",label="GPS")
+    plt.plot(hxEst[0,:],hxEst[1,:],"-r",label="Est")
+    plt.grid(True)
+    plt.axis("equal")
+    plt.legend()
+
     
     plt.show()
 
